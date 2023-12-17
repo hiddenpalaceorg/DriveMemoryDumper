@@ -1,5 +1,5 @@
 # CD/DVD/BD Drive Memory Dumper
-# Version: 2023-12-11
+# Version: 2023-12-17
 # Author: ehw
 # Hidden-Palace.org R&D
 # Description: Description: Attempts to create a memory dump using the user specified 3 byte SCSI opcode consisting of 16MB
@@ -81,11 +81,13 @@ def dvd_drive_exists(drive_letter):
     return os.path.isdir(drive_path)
 
 def read_lba_0(drive_letter):
+    return
     print("Reading LBA 0 to store on the cache")
     command = f"sg_raw.exe -o lba_0_2048.bin -r 2048 {drive_letter}: a8 00 00 00 00 00 00 00 00 01 00 00"
     execute_command(command)
 
 def mem_dump(opcode, drive_letter):
+    read_lba_0(drive_letter) #might make this optional
     try:
         # Generate an array with sums of 16128 starting from 0 and ending with 16773120
         # This is technically the maximum amount that can be returned since the offset part of the CDB is only 3 bytes long
@@ -192,7 +194,7 @@ def main():
     start_time = time.time()
     # Start
     print("CD/DVD/BD Drive Memory Dumper")
-    print("Version: 2023-12-11")
+    print("Version: 2023-12-17")
     print("Author: ehw (Hidden-Palace.org R&D)")
     print("Description: Attempts to create a memory dump using the user specified 3 byte SCSI opcode consisting of 16MB\n") 
 
@@ -204,8 +206,7 @@ def main():
     if dvd_drive_exists(drive_letter):
         print(f"A drive exists at drive letter {drive_letter}.")
     else:
-        print(f"No drive found at drive letter {drive_letter}.")
-        exit
+        print(f"No drive or no disc found at drive letter {drive_letter}. Will attempt to dump anyway.")
 
     # Define a regular expression pattern for the expected format
     opcode_pattern = re.compile(r'^[0-9A-Fa-f]{2} [0-9A-Fa-f]{2} [0-9A-Fa-f]{2}$')
